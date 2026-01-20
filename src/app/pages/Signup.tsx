@@ -61,7 +61,6 @@ export default function Signup() {
       setLoading(true);
       try {
         await signup(formData);
-        toast.success('Please check your email to verify your account before logging in.');
         navigate('/login');
       } catch (error) {
         // Error is already handled by the context with toast
@@ -235,11 +234,10 @@ export default function Signup() {
               <GoogleLogin
                 onSuccess={handleGoogleSuccess}
                 onError={handleGoogleError}
-                useOneTap
                 theme="outline"
                 size="large"
                 text="signup_with"
-                width="100%"
+                width="400"
               />
             </div>
           </form>
