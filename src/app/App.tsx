@@ -57,12 +57,14 @@ function AppRoutes() {
         <Route path="bunk-predictor" element={<BunkPredictor />} />
         <Route path="profile" element={<Profile />} />
       </Route>
+      {/* Catch-all route - redirect to login */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }
 
 export default function App() {
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '736379616148-ts5k9nvq2vr5o16b6lmihpdshgcsl9t1.apps.googleusercontent.com';
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
