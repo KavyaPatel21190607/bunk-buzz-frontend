@@ -168,7 +168,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         college: data.college,
       });
       if (response.success) {
-        toast.success('Signup successful! Please check your email to verify your account.');
+        // Check if email was actually sent
+        if (response.data?.emailSent === false) {
+          toast.warning('Account created! However, verification email could not be sent due to server configuration. Please contact support or try logging in.');
+        } else {
+          toast.success('Signup successful! Please check your email to verify your account.');
+        }
       }
     } catch (error: any) {
       console.error('Signup failed:', error);
