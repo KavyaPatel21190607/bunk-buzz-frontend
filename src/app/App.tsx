@@ -13,6 +13,7 @@ import Subjects from '@/app/pages/Subjects';
 import DailyAttendance from '@/app/pages/DailyAttendance';
 import Timetable from '@/app/pages/Timetable';
 import BunkPredictor from '@/app/pages/BunkPredictor';
+import Analytics from '@/app/pages/Analytics';
 import Profile from '@/app/pages/Profile';
 import Layout from '@/app/components/Layout';
 
@@ -55,6 +56,7 @@ function AppRoutes() {
         <Route path="attendance" element={<DailyAttendance />} />
         <Route path="timetable" element={<Timetable />} />
         <Route path="bunk-predictor" element={<BunkPredictor />} />
+        <Route path="analytics" element={<Analytics />} />
         <Route path="profile" element={<Profile />} />
       </Route>
       {/* Catch-all route - redirect to login */}
