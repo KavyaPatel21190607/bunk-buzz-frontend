@@ -10,12 +10,13 @@ export default function Dashboard() {
 
   // Calculate overall stats
   const totalSubjects = subjects.length;
-  const calculatedAvgAttendance = totalSubjects > 0
-    ? subjects.reduce((sum, sub) => {
-        const percentage = sub.totalLectures > 0 ? (sub.attendedLectures / sub.totalLectures) * 100 : 0;
-        return sum + percentage;
-      }, 0) / totalSubjects
-    : 0;
+  
+  // Calculate weighted overall attendance (matches backend logic)
+  const calculatedAvgAttendance = (() => {
+    const totalLectures = subjects.reduce((sum, sub) => sum + sub.totalLectures, 0);
+    const totalAttended = subjects.reduce((sum, sub) => sum + sub.attendedLectures, 0);
+    return totalLectures > 0 ? Number(((totalAttended / totalLectures) * 100).toFixed(2)) : 0;
+  })();
   
   // Use user's current overall attendance if set, otherwise use calculated
   const avgAttendance = (user?.currentOverallAttendance !== null && user?.currentOverallAttendance !== undefined) 
