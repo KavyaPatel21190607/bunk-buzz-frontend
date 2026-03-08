@@ -7,6 +7,7 @@ import {
   Calendar,
   CalendarCheck,
   Calculator,
+  BarChart3,
   User,
   LogOut,
   Menu,
@@ -30,6 +31,7 @@ export default function Layout() {
     { name: 'Daily Attendance', href: '/attendance', icon: CalendarCheck },
     { name: 'Timetable', href: '/timetable', icon: Calendar },
     { name: 'Bunk Predictor', href: '/bunk-predictor', icon: Calculator },
+    { name: 'Analytics', href: '/analytics', icon: BarChart3 },
     { name: 'Profile', href: '/profile', icon: User },
   ];
 
