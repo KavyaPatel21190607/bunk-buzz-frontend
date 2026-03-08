@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useApp } from '@/app/context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
 import { Progress } from '@/app/components/ui/progress';
@@ -69,6 +70,7 @@ interface AnalyticsData {
 }
 
 export default function Analytics() {
+  const { user } = useApp();
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -113,6 +115,10 @@ export default function Analytics() {
 
   const { overall, predictions, recentActivity, subjects, recommendations } = analyticsData;
 
+  // Use user's manually set attendance if available (from college records)
+  const displayAttendance = user?.currentOverallAttendance ?? overall.currentAttendance;
+  const isFromCollegeRecords = user?.currentOverallAttendance !== null && user?.currentOverallAttendance !== undefined;
+
   const getTrendIcon = () => {
     if (recentActivity.last7Days.trendDirection === 'improving') {
       return <TrendingUp className="w-5 h-5 text-green-600" />;
@@ -139,7 +145,7 @@ export default function Analytics() {
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Current Attendance */}
-        <Card className={overall.status === 'safe' ? 'border-green-200' : 'border-red-200'}>
+        <Card className={displayAttendance >= overall.targetAttendance ? 'border-green-200' : 'border-red-200'}>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">
               <Target className="w-4 h-4" />
@@ -147,9 +153,15 @@ export default function Analytics() {
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col items-center">
-            <CircularProgress percentage={overall.currentAttendance} />
-            <Badge className={`mt-3 ${overall.status === 'safe' ? 'bg-green-500' : 'bg-red-500'}`}>
-              {overall.status === 'safe' ? 'On Track' : 'Below Target'}
+            <CircularProgress percentage={displayAttendance} />
+            {isFromCollegeRecords && (
+              <p className="text-xs text-gray-500 mt-2">From college records</p>
+            )}
+            {!isFromCollegeRecords && overall.currentAttendance !== displayAttendance && (
+              <p className="text-xs text-gray-500 mt-2">Calculated: {overall.currentAttendance}%</p>
+            )}
+            <Badge className={`mt-3 ${displayAttendance >= overall.targetAttendance ? 'bg-green-500' : 'bg-red-500'}`}>
+              {displayAttendance >= overall.targetAttendance ? 'On Track' : 'Below Target'}
             </Badge>
           </CardContent>
         </Card>
@@ -320,7 +332,10 @@ export default function Analytics() {
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
                   <p className="text-xs text-gray-500">Current</p>
-                  <p className="text-lg font-semibold">{overall.currentAttendance}%</p>
+                  <p className="text-lg font-semibold">{displayAttendance.toFixed(2)}%</p>
+                  {isFromCollegeRecords && (
+                    <p className="text-xs text-gray-400 mt-1">(College records)</p>
+                  )}
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Target</p>
@@ -329,9 +344,9 @@ export default function Analytics() {
                 <div>
                   <p className="text-xs text-gray-500">Gap</p>
                   <p className={`text-lg font-semibold ${
-                    overall.currentAttendance >= overall.targetAttendance ? 'text-green-600' : 'text-red-600'
+                    displayAttendance >= overall.targetAttendance ? 'text-green-600' : 'text-red-600'
                   }`}>
-                    {(overall.currentAttendance - overall.targetAttendance).toFixed(2)}%
+                    {(displayAttendance - overall.targetAttendance).toFixed(2)}%
                   </p>
                 </div>
               </div>
