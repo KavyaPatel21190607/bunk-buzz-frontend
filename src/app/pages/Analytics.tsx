@@ -38,6 +38,14 @@ interface AnalyticsData {
     projectedAfter5Classes: number;
     projectedAfter10Classes: number;
     estimatedDaysToTarget: number;
+    estimatedWeeksToTarget: number;
+    lecturesPerWeek: number;
+    lecturesPerDay: number;
+  };
+  timetableInfo: {
+    totalWeeklyLectures: number;
+    hasSchedule: boolean;
+    subjectFrequency: Record<string, number>;
   };
   recentActivity: {
     last7Days: {
@@ -59,6 +67,8 @@ interface AnalyticsData {
     minimumRequired: number;
     safeBunks: number;
     classesNeeded: number;
+    weeklyFrequency?: number;
+    weeksNeeded?: number;
     status: 'safe' | 'risk';
   }>;
   recommendations: Array<{
@@ -113,7 +123,7 @@ export default function Analytics() {
     );
   }
 
-  const { overall, predictions, recentActivity, subjects, recommendations } = analyticsData;
+  const { overall, predictions, recentActivity, subjects, recommendations, timetableInfo } = analyticsData;
 
   // Use user's manually set attendance if available (from college records)
   const displayAttendance = user?.currentOverallAttendance ?? overall.currentAttendance;
@@ -185,7 +195,13 @@ export default function Analytics() {
                   : `Target achieved! ✨`
                 }
               </p>
-              {predictions.estimatedDaysToTarget > 0 && (
+              {predictions.estimatedWeeksToTarget > 0 && timetableInfo.hasSchedule && (
+                <div className="text-xs text-gray-500 mt-2 space-y-1">
+                  <p>📅 ~{predictions.estimatedWeeksToTarget} weeks needed</p>
+                  <p>📚 {timetableInfo.totalWeeklyLectures} lectures/week</p>
+                </div>
+              )}
+              {predictions.estimatedDaysToTarget > 0 && !timetableInfo.hasSchedule && (
                 <p className="text-xs text-gray-500 mt-2">
                   ~{predictions.estimatedDaysToTarget} days
                 </p>
@@ -395,6 +411,15 @@ export default function Analytics() {
                   <div>
                     <p className="text-gray-500">Safe Bunks</p>
                     <p className="font-semibold text-blue-600">{subject.safeBunks}</p>
+
+                {subject.weeklyFrequency && subject.weeklyFrequency > 0 && (
+                  <div className="mt-3 pt-3 border-t border-gray-200 text-xs text-gray-600 text-center">
+                    📅 {subject.weeklyFrequency}x per week
+                    {subject.weeksNeeded && subject.weeksNeeded > 0 && (
+                      <span> • Need ~{subject.weeksNeeded} weeks to recover</span>
+                    )}
+                  </div>
+                )}
                   </div>
                   <div>
                     <p className="text-gray-500">Classes Needed</p>
